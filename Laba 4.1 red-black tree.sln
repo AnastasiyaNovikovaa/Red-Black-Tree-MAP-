@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28010.2036
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Laba 4.1 red-black tree", "Laba 4.1 red-black tree\Laba 4.1 red-black tree.vcxproj", "{05015DF3-DBFB-472E-B993-81400CBF7778}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{05015DF3-DBFB-472E-B993-81400CBF7778}.Debug|x64.ActiveCfg = Debug|x64
+		{05015DF3-DBFB-472E-B993-81400CBF7778}.Debug|x64.Build.0 = Debug|x64
+		{05015DF3-DBFB-472E-B993-81400CBF7778}.Debug|x86.ActiveCfg = Debug|Win32
+		{05015DF3-DBFB-472E-B993-81400CBF7778}.Debug|x86.Build.0 = Debug|Win32
+		{05015DF3-DBFB-472E-B993-81400CBF7778}.Release|x64.ActiveCfg = Release|x64
+		{05015DF3-DBFB-472E-B993-81400CBF7778}.Release|x64.Build.0 = Release|x64
+		{05015DF3-DBFB-472E-B993-81400CBF7778}.Release|x86.ActiveCfg = Release|Win32
+		{05015DF3-DBFB-472E-B993-81400CBF7778}.Release|x86.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {CDE4C968-6A9F-4BE9-9BAA-2921E4547ACF}
+	EndGlobalSection
+EndGlobal
