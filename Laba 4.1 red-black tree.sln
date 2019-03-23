@@ -5,6 +5,8 @@ VisualStudioVersion = 15.0.28010.2036
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Laba 4.1 red-black tree", "Laba 4.1 red-black tree\Laba 4.1 red-black tree.vcxproj", "{05015DF3-DBFB-472E-B993-81400CBF7778}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "UnitTest_for_RBTree", "UnitTest_for_RBTree\UnitTest_for_RBTree.vcxproj", "{A04925A3-02EF-4FC1-AA50-3A470AA49A15}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -21,6 +23,14 @@ Global
 		{05015DF3-DBFB-472E-B993-81400CBF7778}.Release|x64.Build.0 = Release|x64
 		{05015DF3-DBFB-472E-B993-81400CBF7778}.Release|x86.ActiveCfg = Release|Win32
 		{05015DF3-DBFB-472E-B993-81400CBF7778}.Release|x86.Build.0 = Release|Win32
+		{A04925A3-02EF-4FC1-AA50-3A470AA49A15}.Debug|x64.ActiveCfg = Debug|x64
+		{A04925A3-02EF-4FC1-AA50-3A470AA49A15}.Debug|x64.Build.0 = Debug|x64
+		{A04925A3-02EF-4FC1-AA50-3A470AA49A15}.Debug|x86.ActiveCfg = Debug|Win32
+		{A04925A3-02EF-4FC1-AA50-3A470AA49A15}.Debug|x86.Build.0 = Debug|Win32
+		{A04925A3-02EF-4FC1-AA50-3A470AA49A15}.Release|x64.ActiveCfg = Release|x64
+		{A04925A3-02EF-4FC1-AA50-3A470AA49A15}.Release|x64.Build.0 = Release|x64
+		{A04925A3-02EF-4FC1-AA50-3A470AA49A15}.Release|x86.ActiveCfg = Release|Win32
+		{A04925A3-02EF-4FC1-AA50-3A470AA49A15}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
