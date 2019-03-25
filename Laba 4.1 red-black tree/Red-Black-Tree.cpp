@@ -1,5 +1,4 @@
 #include "Red-Black-Tree.h"
-#include "Iterator.h"
 #include <stdexcept>
 
 
@@ -24,35 +23,12 @@ RBTree<T, T2>::~RBTree()
 			root = nullptr;
 		}*/
 }
-/*
-template<typename T>
-void RBTree<T>::node::Del()
-{
-	if (this != nullptr) {
-		this->next_left->Del();
-		this->next_right->Del();
-		free(this);
-	}
-}
-*/
-
-/*template<typename T>
-void RBTree<T>::add_first(node *cur)
-{
-	root = cur;
-	cur->parent = nullptr;
-	cur->color = 0;
-	size++;
-}
-*/
 
 template <typename T, typename T2 >
-void RBTree<T, T2>::add_first(T key, T2 val)
+void RBTree<T, T2> :: add_first(node *current)
 {
-
-	root = new node(key, val);
+	root = current;
 	root->parent = nullptr;
-	size++;
 }
 
 template <typename T, typename T2 >
@@ -60,140 +36,142 @@ void RBTree<T, T2>::remove(T key)
 {
 	if (this->root == nullptr)
 	{
-		throw out_of_range("error");
+		throw out_of_range("SOS! Dangerous! Error");
 	}
 
-	node *p;
-	p = root;
-	node *y = NULL;
-	node *q = NULL;
-	int found = 0;
-	while (p != NULL && found == 0)
+	node *current;
+	current = root;
+	node *parent_of_leaf = NULL;
+	node *leaf = NULL;
+	int flag = 0;
+	while (current != NULL && flag == 0)
 	{
-		if (p->key == key)
-			found = 1;
-		if (found == 0)
+		if (current->key == key)
+			flag = 1;
+		if (flag == 0)
 		{
-			if (p->key < key)
-				p = p->next_right;
+			if (current->key < key)
+				current = current->right;
 			else
-				p = p->next_left;
+				current = current->left;
 		}
 	}
-	if (found == 0)
+	if (flag == 0)
 	{
 		throw out_of_range("error");
 	}
 	else
 	{
-		if (p->next_left == nullptr || p->next_right == nullptr)
-			y = p;
+		if (current->left == nullptr || current->right == nullptr)
+			parent_of_leaf = current;
 		else
-			y = get_successor(p);
-		if (y->next_left != nullptr)
-			q = y->next_left;
+			parent_of_leaf = get_leaf(current);
+		if (parent_of_leaf->left != nullptr)
+			leaf = parent_of_leaf->left;
 		else
 		{
-			if (y->next_right != nullptr)
-				q = y->next_right;
+			if (parent_of_leaf->right != nullptr)
+				leaf = parent_of_leaf->right;
 			else
-				q = nullptr;
+				leaf = nullptr;
 		}
-		if (q != nullptr)
-			q->parent = y->parent;
-		if (y->parent == nullptr)
-			root = q;
+		if (leaf != nullptr)
+			leaf->parent = parent_of_leaf->parent;
+		if (parent_of_leaf->parent == nullptr)
+			root = leaf;
 		else
 		{
-			if (y == y->parent->next_left)
-				y->parent->next_left = q;
+			if (parent_of_leaf == parent_of_leaf->parent->left)
+				parent_of_leaf->parent->left = leaf;
 			else
-				y->parent->next_right = q;
+				parent_of_leaf->parent->right = leaf;
 		}
-		if (y != p)
+		if (parent_of_leaf != current)
 		{
-			p->color = y->color;
-			p->key = y->key;
+			current->color = parent_of_leaf->color;
+			current->key = parent_of_leaf->key;
 		}
-		if (y->color == 'b')
-			delfix(q);
+		if (parent_of_leaf->color == 'b')
+			delfix(leaf);
+	}
+	size--;
+}
+
+template <typename T, typename T2 >
+void RBTree<T, T2>::delfix(node *current)
+{
+	node *temp_elem;
+	while (current != root && current->color == 'b')
+	{
+		if (current->parent->left == current)
+		{
+			temp_elem = current->parent->right;
+			if (temp_elem->color == 'r')
+			{
+				temp_elem->color = 'b';
+				current->parent->color = 'r';
+				leftrotate(current->parent);
+				temp_elem = current->parent->right;
+			}
+			if (temp_elem->right->color == 'b' && temp_elem->left->color == 'b')
+			{
+				temp_elem->color = 'r';
+				current = current->parent;
+			}
+			else
+			{
+				if (temp_elem->right->color == 'b')
+				{
+					temp_elem->left->color = 'b';
+					temp_elem->color = 'r';
+					rightrotate(temp_elem);
+					temp_elem = current->parent->right;
+				}
+				temp_elem->color = current->parent->color;
+				current->parent->color = 'b';
+				temp_elem->right->color = 'b';
+				leftrotate(current->parent);
+				current = root;
+			}
+		}
+		else
+		{
+			temp_elem = current->parent->left;
+			if (temp_elem->color == 'r')
+			{
+				temp_elem->color = 'b';
+				current->parent->color = 'r';
+				rightrotate(current->parent);
+				temp_elem = current->parent->left;
+			}
+			if (temp_elem->left->color == 'b'&&temp_elem->right->color == 'b')
+			{
+				temp_elem->color = 'r';
+				current = current->parent;
+			}
+			else
+			{
+				if (temp_elem->left->color == 'b')
+				{
+					temp_elem->right->color = 'b';
+					temp_elem->color = 'r';
+					leftrotate(temp_elem);
+					temp_elem = current->parent->left;
+				}
+				temp_elem->color = current->parent->color;
+				current->parent->color = 'b';
+				temp_elem->left->color = 'b';
+				rightrotate(current->parent);
+				current = root;
+			}
+		}
+		current->color = 'b';
+		root->color = 'b';
 	}
 }
 
 template <typename T, typename T2 >
-void RBTree<T, T2>::delfix(node *p)
-{
-	node *s;
-	while (p != root && p->color == 'b')
-	{
-		if (p->parent->next_left == p)
-		{
-			s = p->parent->next_right;
-			if (s->color == 'r')
-			{
-				s->color = 'b';
-				p->parent->color = 'r';
-				leftrotate(p->parent);
-				s = p->parent->next_right;
-			}
-			if (s->next_right->color == 'b'&&s->next_left->color == 'b')
-			{
-				s->color = 'r';
-				p = p->parent;
-			}
-			else
-			{
-				if (s->next_right->color == 'b')
-				{
-					s->next_left->color == 'b';
-					s->color = 'r';
-					rightrotate(s);
-					s = p->parent->next_right;
-				}
-				s->color = p->parent->color;
-				p->parent->color = 'b';
-				s->next_right->color = 'b';
-				leftrotate(p->parent);
-				p = root;
-			}
-		}
-		else
-		{
-			s = p->parent->next_left;
-			if (s->color == 'r')
-			{
-				s->color = 'b';
-				p->parent->color = 'r';
-				rightrotate(p->parent);
-				s = p->parent->next_left;
-			}
-			if (s->next_left->color == 'b'&&s->next_right->color == 'b')
-			{
-				s->color = 'r';
-				p = p->parent;
-			}
-			else
-			{
-				if (s->next_left->color == 'b')
-				{
-					s->next_right->color = 'b';
-					s->color = 'r';
-					leftrotate(s);
-					s = p->parent->next_left;
-				}
-				s->color = p->parent->color;
-				p->parent->color = 'b';
-				s->next_left->color = 'b';
-				rightrotate(p->parent);
-				p = root;
-			}
-		}
-		p->color = 'b';
-		root->color = 'b';
-	}
-}
-template <typename T, typename T2 >
-T2 RBTree<T, T2>::find(T key)
+void RBTree<T, T2>::find(T key)
 {
 	if (this->root == nullptr)
 	{
@@ -202,8 +180,10 @@ T2 RBTree<T, T2>::find(T key)
 
 	auto it = create_bft_iterator();
 	for (; it != nullptr; it++)
-		if (it.current_key() == key) return *it;
-	throw out_of_range("error");
+	{
+		if (it.current_key() == key) cout << it.current_key();
+	}
+	
 }
 
 template <typename T, typename T2 >
@@ -214,12 +194,21 @@ void RBTree<T, T2>::get_keys()
 	{
 		throw out_of_range("error");
 	}
+	
 	auto it = create_bft_iterator();
 	for (; it != nullptr; it++)
+	{
 		cout << it.current_key() << ' ';
+	}
+	cout << '\n';
+	auto it1 = create_bft_iterator();
+	for (; it1 != nullptr; it1++)
+	{
+		cout << it1.current_color() << ' ';
+	}
+
 	cout << '\n';
 }
-
 
 template <typename T, typename T2 >
 void RBTree<T, T2>::get_value()
@@ -228,26 +217,213 @@ void RBTree<T, T2>::get_value()
 	{
 		throw out_of_range("error");
 	}
-	auto it = create_bft_iterator();
-	for (; it != nullptr; it++)
-		cout <<it.current_key() << ' ';
+	auto it1 = create_bft_iterator();
+	for (; it1 != nullptr; it1++)
+		cout <<it1.current_value() << ' ';
 	cout << '\n';
+}
 
 
+template <typename T, typename T2 >
+int RBTree<T, T2>::get_size() {
+	return size;
 }
 
 template <typename T, typename T2 >
-void RBTree<T, T2>::clear()
+void RBTree<T, T2>::clear()                   //clear of RED-BLACK-TREE
 {
 	while (size > 0)
-		remove(root->key);
+	remove(root->key);
+
+	if (size == 0) cout << "RBTree is empty\n";
 }
 
 template <typename T, typename T2 >
 void RBTree<T, T2>::reset_list()
 {
-	//	cur = nullptr;
 	root = nullptr;
+}
+
+template <typename T, typename T2 >
+typename RBTree<T, T2>::node * RBTree<T, T2>::get_leaf(node *current)      
+{
+	node *leaf = NULL;
+	if (current->left != NULL)
+	{
+		leaf = current->left;
+		while (leaf->right != NULL)
+			leaf = leaf->right;
+	}
+	else
+	{
+		leaf = current->right;
+		while (leaf->left != NULL)
+			leaf = leaf->left;
+	}
+	return leaf;
+}
+
+template <typename T, typename T2 >
+void RBTree<T, T2>::insert(T key, T2 value) {
+
+	node *help_elem, *prev;
+	node *current = new node(key, value);
+	help_elem = root;
+	prev = nullptr;
+	if (root == nullptr)
+	{
+		add_first(current);
+	
+	}
+	else
+	{
+		while (help_elem != nullptr)
+		{
+			prev = help_elem;
+			if (help_elem->key < current->key)
+				help_elem = help_elem->right;
+			else
+				help_elem = help_elem->left;
+		}	
+		current->parent = prev;
+		if (prev->key < current->key)
+			prev->right = current;
+		else
+			prev->left = current;
+	}
+
+	insertfix(current);
+	size++;
+}
+
+template <typename T, typename T2 >
+void RBTree<T, T2>::insertfix(node *current) {
+	
+	node *uncle;
+	if (root == current)
+	{
+		current->color = 'b';
+		return;
+	}
+	
+	while (current->parent != nullptr && current->parent->color == 'r')
+	{
+		node *grandparents = current->parent->parent;
+		if (grandparents->left == current->parent)
+		{
+			if (grandparents->right != nullptr)
+			{
+				uncle = grandparents->right;
+				if (uncle->color == 'r')
+				{
+					current->parent->color = 'b';
+					uncle->color = 'b';
+					grandparents->color = 'r';
+					current = grandparents;
+				}
+			}
+			else
+			{
+				if (current->parent->right == current)
+				{
+					current = current->parent;
+					leftrotate(current);
+				}
+				current->parent->color = 'b';
+				grandparents->color = 'r';
+				rightrotate(grandparents);
+			}
+		}
+		else
+		{
+			if (grandparents->left != nullptr)
+			{
+				uncle = grandparents->left;
+				if (uncle->color == 'r')
+				{
+					current->parent->color = 'b';
+					uncle->color = 'b';
+					grandparents->color = 'r';
+					current = grandparents;
+				}
+			}
+			else
+			{
+				if (current->parent->left == current)
+				{
+					current = current->parent;
+					rightrotate(current);
+				}
+				current->parent->color = 'b';
+				grandparents->color = 'r';
+				leftrotate(grandparents);
+			}
+		}
+		root->color = 'b';
+	}
+
+}
+
+template <typename T, typename T2 >
+void RBTree<T, T2>::leftrotate(node *current)
+{
+	if (current->right == nullptr)
+		return;
+	else
+	{
+		node *y = current->right;
+		if (y->left != nullptr)
+		{
+			current->right = y->left;
+			y->left->parent = current;
+		}
+		else
+			current->right = nullptr;
+		if (current->parent != nullptr)
+			y->parent = current->parent;
+		if (current->parent == nullptr)
+			root = y;
+		else
+		{
+			if (current == current->parent->left)
+				current->parent->left = y;
+			else
+				current->parent->right = y;
+		}
+		y->left = current;
+		current->parent = y;
+	}
+}
+
+template <typename T, typename T2 >
+void RBTree<T, T2>::rightrotate(node *current)
+{
+	if (current->left == nullptr)
+		return;
+	else
+	{
+		node *child = current->left;
+		if (child->right != nullptr)
+		{
+			current->left = child->right;
+			child->right->parent = current;
+		}
+		else
+			current->left = nullptr;
+		if (current->parent != nullptr)
+			child->parent = current->parent;
+		if (current->parent == nullptr)
+			root = child;
+		else
+		{
+			if (current == current->parent->left)
+				current->parent->left = child;
+			else
+				current->parent->right = child;
+		}
+		child->right = current;
+		current->parent = child;
+	}
 }
 
 /*template <typename T>
@@ -276,185 +452,15 @@ typename RBTree<T>::node * RBTree<T>::get_sibling(node *current)
 		return current->parent->next_left;
 }
 */
-template <typename T, typename T2 >
-typename RBTree<T, T2>::node * RBTree<T, T2>::get_successor(node *current)
+
+/*
+template<typename T>
+void RBTree<T>::node::Del()
 {
-	node *successor = NULL;
-	if (current->next_left != NULL)
-	{
-		successor = current->next_left;
-		while (successor->next_right != NULL)
-			successor = successor->next_right;
-	}
-	else
-	{
-		successor = current->next_right;
-		while (successor->next_left != NULL)
-			successor = successor->next_left;
-	}
-	return successor;
-}
-
-
-template <typename T, typename T2 >
-void RBTree<T, T2>::insert(T key, T2 value) {
-
-	node *temp, *prev;
-	node *current = new node(key, value);
-	temp = root;
-	prev = nullptr;
-	if (root == nullptr)
-	{ // использовать эдд
-		root = current;
-		current->parent = nullptr;
-	}
-	else
-	{
-		while (temp != nullptr)
-		{
-			prev = temp;
-			if (temp->key < current->key)
-				temp = temp->next_right;
-			else
-				temp = temp->next_left;
-		}	
-		current->parent = prev;
-		if (prev->key < current->key)
-			prev->next_right = current;
-		else
-			prev->next_left = current;
-	}
-
-	insertfix(current);
-	size++;
-}
-
-template <typename T, typename T2 >
-void RBTree<T, T2>::insertfix(node *current) {
-	
-	node *uncle;
-	if (root == current)
-	{
-		current->color = 'b';
-		return;
-	}
-	
-	while (current->parent != nullptr && current->parent->color == 'r')
-	{
-		node *granny = current->parent->parent;
-		if (granny->next_left == current->parent)
-		{
-			if (granny->next_right != nullptr)
-			{
-				uncle = granny->next_right;
-				if (uncle->color == 'r')
-				{
-					current->parent->color = 'b';
-					uncle->color = 'b';
-					granny->color = 'r';
-					current = granny;
-				}
-			}
-			else
-			{
-				if (current->parent->next_right == current)
-				{
-					current = current->parent;
-					leftrotate(current);
-				}
-				current->parent->color = 'b';
-				granny->color = 'r';
-				rightrotate(granny);
-			}
-		}
-		else
-		{
-			if (granny->next_left != nullptr)
-			{
-				uncle = granny->next_left;
-				if (uncle->color == 'r')
-				{
-					current->parent->color = 'b';
-					uncle->color = 'b';
-					granny->color = 'r';
-					current = granny;
-				}
-			}
-			else
-			{
-				if (current->parent->next_left == current)
-				{
-					current = current->parent;
-					rightrotate(current);
-				}
-				current->parent->color = 'b';
-				granny->color = 'r';
-				leftrotate(granny);
-			}
-		}
-		root->color = 'b';
-	}
-
-}
-
-template <typename T, typename T2 >
-void RBTree<T, T2>::leftrotate(node *current)
-{
-	if (current->next_right == nullptr)
-		return;
-	else
-	{
-		node *y = current->next_right;
-		if (y->next_left != nullptr)
-		{
-			current->next_right = y->next_left;
-			y->next_left->parent = current;
-		}
-		else
-			current->next_right = nullptr;
-		if (current->parent != nullptr)
-			y->parent = current->parent;
-		if (current->parent == nullptr)
-			root = y;
-		else
-		{
-			if (current == current->parent->next_left)
-				current->parent->next_left = y;
-			else
-				current->parent->next_right = y;
-		}
-		y->next_left = current;
-		current->parent = y;
+	if (this != nullptr) {
+		this->next_left->Del();
+		this->next_right->Del();
+		free(this);
 	}
 }
-
-template <typename T, typename T2 >
-void RBTree<T, T2>::rightrotate(node *current)
-{
-	if (current->next_left == nullptr)
-		return;
-	else
-	{
-		node *child = current->next_left;
-		if (child->next_right != nullptr)
-		{
-			current->next_left = child->next_right;
-			child->next_right->parent = current;
-		}
-		else
-			current->next_left = nullptr;
-		if (current->parent != nullptr)
-			child->parent = current->parent;
-		if (current->parent == nullptr)
-			root = child;
-		else
-		{
-			if (current == current->parent->next_left)
-				current->parent->next_left = child;
-			else
-				current->parent->next_right = child;
-		}
-		child->next_right = current;
-		current->parent = child;
-	}
-}
+*/

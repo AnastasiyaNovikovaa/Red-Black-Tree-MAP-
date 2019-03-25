@@ -2,6 +2,10 @@
 #include <cstddef>
 
 template <class T, class T2>
+
+//Итератор - структура данных, которая предоставляет доступ к элементам коллекции и навигацию по ним.
+
+
 class Iterator
 {
 public:

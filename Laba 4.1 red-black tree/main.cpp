@@ -1,32 +1,66 @@
 #include "Red-Black-Tree.cpp"
-#include "Iterator.h"
 #include <conio.h>
 #include <iostream>
 #include <string>
 
-void main()
+int main()
 {
-	RBTree<int, int> List;
-	List.insert(2, 1);  //     2
-	List.insert(4, 2);  //   1   4
-	List.insert(3, 3);  // 0    3  9
-	List.insert(0, 4);
-	/*List.insert(9, 4);
-	List.insert(0, 7);
-	List.insert(2, 8);
-	List.remove(2);*/
-	/*List.insert(13, 'a');
-	List.insert(9, 'b');
-	List.insert(12, 'c');
-	List.insert(14, 'd');
-	List.insert(7, 'f');
-	List.insert(11, 'g');
-	List.insert(23, 'h');
-	List.insert(19, 'i');
-	List.insert(1, 'j');
-	List.insert(4, 'k');
-	List.insert(6, 'l');*/
-	List.get_value();
+	cout << "Laboratory work number 2\n";
+	cout << "by Novikova Anastasiya";
+	cout << endl;
+	cout << "Keys of Red-Black Tree:";
+	cout << endl;
+
+	RBTree<int, int> RBTree_int;
+	RBTree_int.insert(3, 3); 
+	RBTree_int.insert(6, 8);  
+	RBTree_int.insert(1, 5);  
+	RBTree_int.insert(0, 4);
+	RBTree_int.insert(7, 0);
+	RBTree_int.insert(4, 7);
+	RBTree_int.insert(2, 2);
+	RBTree_int.get_keys();
+	cout << endl;
+	cout << "Value of Red-Black Tree:";
+	cout << endl;
+	RBTree_int.get_value();
+	cout << endl;
+	cout << "Size of Red-Black Tree:";
+	cout << RBTree_int.get_size();
+	cout << endl;
+	cout << "Keys of Red-Black Tree after removing 7:";
+	cout << endl;
+	RBTree_int.remove(7);
+	RBTree_int.get_keys();
+	cout << endl;
+	cout << "Find Key=4 of Red-Black Tree:";
+	RBTree_int.find(4);
+	cout << endl;
+	RBTree_int.clear();
+	cout << endl;
+	cout << "<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3\n";
+	cout << endl;
+	RBTree<int, char> RBTree_char;
+	RBTree_char.insert(13, 'a');
+	RBTree_char.insert(9, 'b');
+	RBTree_char.insert(12, 'c');
+	RBTree_char.insert(14, 'd');
+	RBTree_char.insert(7, 'f');
+	cout << "Keys of Red-Black Tree:";
+	cout << endl;
+	RBTree_char.get_keys();
+	cout << endl;
+	cout << "Value of Red-Black Tree:";
+	cout << endl;
+	RBTree_char.get_value();
+	cout << endl;
+	cout << "Size of Red-Black Tree:";
+	cout << RBTree_char.get_size();
+	cout << endl;
+	RBTree_char.clear();
+
+	cout << endl;
+	cout << "GoodBuy! Have a nice day :)";
 	_getch();
-	//return;
+	
 }

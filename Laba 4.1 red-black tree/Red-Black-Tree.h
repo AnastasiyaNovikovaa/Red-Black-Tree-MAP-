@@ -5,25 +5,6 @@
 using namespace std;
 
 
-template <class item> class stack
-{
-	item *Stack; int size_;
-public:
-	stack(int maxt) : Stack(new item[maxt]), size_(0) {};
-	~stack();
-	bool empty() const { return size_ == 0; }
-	int size() const { return size_; }
-	void push(item & item) { Stack[size_++] = item; }
-	item top() const { return Stack[size_ - 1]; }
-	void pop() { if (size_) --size_; }
-};
-
-template <class item>
-stack<item>::~stack()
-{
-	free(Stack); // óäàëÿåì ñòåê
-}
-
 template <class item> class queue
 {
 	item *Queue; int head, tail, size_, Max;
@@ -52,22 +33,21 @@ private:
 	{
 
 	public:
-		node(T key, T2 data, node * next1 = nullptr, node * next2 = nullptr) {
+		node(T key, T2 data, node * left = nullptr, node * right = nullptr) {
 			this->data = data;
-			this->next_left = next1;
-			this->next_right = next2;
+			this->left = left;
+			this->right = right;
 			this->key = key;
-			/*this->height = 0;*/
 			this->parent = nullptr;
 			this->color = 'r';
 
 		};
 		char color;
 		T key, data;
-		node * next_right, *next_left, *parent;
-		/*unsigned int height;*/
-		/*void Del();*/
-		~node();
+		node * right;
+		node *left;
+		node *parent;
+		
 
 	};
 
@@ -76,6 +56,7 @@ private:
 public:
 	RBTree();
 	~RBTree();
+	
 	class TreeIterator : public Iterator<T, T2> {
 	protected:
 		node *current;
@@ -86,10 +67,10 @@ public:
 		bool operator!=(const nullptr_t) const override { return !operator==(nullptr); }
 		T2 operator*() const override { return current->data; }
 		T current_key() { return current->key; }
+		T2 current_value() { return current->data; }
 		char current_color() { return current->color; }
 
 	};
-
 
 	class BftIterator : public TreeIterator {
 	private:
@@ -98,42 +79,34 @@ public:
 		BftIterator(node *root, size_t size) : TreeIterator(root), nodes(size) {}
 		void operator++(T) override;
 	};
-
-	//mode* remove(int);
-	void reset_list();
-
-	node* get_uncle(node*);
-	node* get_grandparent(node *);
-	node* get_sibling(node *);
-	node *get_successor(node *);
-
-	//void add_first(node*);
-	void add_first(T, T2);
-	void remove(T);
-	void delfix(node*);
-	T2 find(T);
-
-	void get_keys();
-	T get_colors();
-	void get_value();
-	void clear();
-	void insert(T, T2);
-	void insertfix(node *t);
+	void insertfix(node *t);      //supporting function for insert
 	void leftrotate(node *);
 	void rightrotate(node *);
-
+	void reset_list();
+	node *get_leaf(node *);       //supporting function for remove
+	void add_first(node*);        //adding the first element to the tree
+	void delfix(node*);           //supporting function for remove, balance
+public:
+	void get_keys();
+	void get_value();
+	void clear();                 //clearing the tree
+	void insert(T, T2);
+	void remove(T);               //removing element by key
+	int get_size();
+	void find(T);                 //finding element by key
 	BftIterator create_bft_iterator() { return BftIterator(root, size); }
+	
+	
 };
-
 
 
 template<typename T, typename T2>
 void RBTree<T, T2>::BftIterator::operator++(T)
 {
-	if (this->current->next_left != nullptr)
-		nodes.push(this->current->next_left);
-	if (this->current->next_right != nullptr)
-		nodes.push(this->current->next_right);
+	if (this->current->left != nullptr)
+		nodes.push(this->current->left);
+	if (this->current->right != nullptr)
+		nodes.push(this->current->right);
 	if (nodes.size() > 0) {
 		this->current = nodes.front();
 		nodes.pop();
