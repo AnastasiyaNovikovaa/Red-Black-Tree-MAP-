@@ -11,7 +11,7 @@ int main()
 	cout << "Keys of Red-Black Tree:";
 	cout << endl;
 
-	RBTree<int, int> RBTree_int;
+	Map<int, int> RBTree_int;
 	RBTree_int.insert(3, 3); 
 	RBTree_int.insert(6, 8);  
 	RBTree_int.insert(1, 5);  
@@ -40,7 +40,7 @@ int main()
 	cout << endl;
 	cout << "<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3\n";
 	cout << endl;
-	RBTree<int, char> RBTree_char;
+	Map<int, char> RBTree_char;
 	RBTree_char.insert(13, 'a');
 	RBTree_char.insert(9, 'b');
 	RBTree_char.insert(12, 'c');

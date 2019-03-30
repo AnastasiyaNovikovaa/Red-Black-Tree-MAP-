@@ -3,38 +3,30 @@
 
 
 template <typename T, typename T2 >
-RBTree<T, T2>::RBTree()
+Map<T, T2>::Map()
 {
 	reset_list();
 	size = 0;
 }
 
 template <typename T, typename T2 >
-RBTree<T, T2>::~RBTree()
+Map<T, T2>::~Map()
 {
 	clear();
-	/*	if (root != nullptr)
-		{
-			root->Del();
-			if (root->next_left != nullptr)
-				root->next_left = nullptr;
-			if (root->next_right != nullptr)
-				root->next_right = nullptr;
-			root = nullptr;
-		}*/
+
 }
 
 template <typename T, typename T2 >
-void RBTree<T, T2> :: add_first(node *current)
+void Map<T, T2> :: add_first(node *current)                    //добавление элемента в пустой список
 {
 	root = current;
 	root->parent = nullptr;
 }
 
 template <typename T, typename T2 >
-void RBTree<T, T2>::remove(T key)
+void Map<T, T2>::remove(T key)
 {
-	if (this->root == nullptr)
+	if (this->root == nullptr)                                //если список пуст
 	{
 		throw out_of_range("SOS! Dangerous! Error");
 	}
@@ -43,8 +35,8 @@ void RBTree<T, T2>::remove(T key)
 	current = root;
 	node *parent_of_leaf = NULL;
 	node *leaf = NULL;
-	int flag = 0;
-	while (current != NULL && flag == 0)
+	int flag = 0;                                             // переменная-флаг, принимает значение 1, если элемент для удаления найден
+	while (current != NULL && flag == 0)                      //цикл для нахождения нужного элемента
 	{
 		if (current->key == key)
 			flag = 1;
@@ -56,13 +48,13 @@ void RBTree<T, T2>::remove(T key)
 				current = current->left;
 		}
 	}
-	if (flag == 0)
+	if (flag == 0)                                            //если элемент не найден
 	{
-		throw out_of_range("error");
+		throw out_of_range("Not found");
 	}
 	else
 	{
-		if (current->left == nullptr || current->right == nullptr)
+		if (current->left == nullptr || current->right == nullptr)  //если у элемента нет правого или левого потомка
 			parent_of_leaf = current;
 		else
 			parent_of_leaf = get_leaf(current);
@@ -82,23 +74,23 @@ void RBTree<T, T2>::remove(T key)
 		else
 		{
 			if (parent_of_leaf == parent_of_leaf->parent->left)
-				parent_of_leaf->parent->left = leaf;
+				parent_of_leaf->parent->left = leaf;                     //зануляем указатели посленего элемента
 			else
 				parent_of_leaf->parent->right = leaf;
 		}
-		if (parent_of_leaf != current)
+		if (parent_of_leaf != current)                                  //переносим значения последнего элемента 
 		{
 			current->color = parent_of_leaf->color;
 			current->key = parent_of_leaf->key;
 		}
-		if (parent_of_leaf->color == 'b')
+		if (parent_of_leaf->color == 'b')                              //перебалансировка цветов
 			delfix(leaf);
 	}
 	size--;
 }
 
 template <typename T, typename T2 >
-void RBTree<T, T2>::delfix(node *current)
+void Map<T, T2>::delfix(node *current)
 {
 	node *temp_elem;
 	while (current != root && current->color == 'b')
@@ -171,28 +163,33 @@ void RBTree<T, T2>::delfix(node *current)
 }
 
 template <typename T, typename T2 >
-void RBTree<T, T2>::find(T key)
+int Map<T, T2>::find(T key)
 {
 	if (this->root == nullptr)
 	{
-		throw out_of_range("error");
+		throw out_of_range("Tree is empty");
 	}
-
+	int flag = 0;
 	auto it = create_bft_iterator();
 	for (; it != nullptr; it++)
 	{
-		if (it.current_key() == key) cout << it.current_key();
+		if (it.current_key() == key)
+		{
+			cout << it.current_key();
+			flag = 1;
+		}
 	}
-	
+	if (flag == 1) return 1;
+	else return 0;
 }
 
 template <typename T, typename T2 >
-void RBTree<T, T2>::get_keys()
+void Map<T, T2>::get_keys()
 {
 
 	if (this->root == nullptr)
 	{
-		throw out_of_range("error");
+		throw out_of_range("SOS! ATTENTION! ERROR!");
 	}
 	
 	auto it = create_bft_iterator();
@@ -211,11 +208,11 @@ void RBTree<T, T2>::get_keys()
 }
 
 template <typename T, typename T2 >
-void RBTree<T, T2>::get_value()
+void Map<T, T2>::get_value()
 {
 	if (this->root == nullptr)
 	{
-		throw out_of_range("error");
+		throw out_of_range("SOS! ATTENTION! ERROR!");
 	}
 	auto it1 = create_bft_iterator();
 	for (; it1 != nullptr; it1++)
@@ -223,14 +220,13 @@ void RBTree<T, T2>::get_value()
 	cout << '\n';
 }
 
-
 template <typename T, typename T2 >
-int RBTree<T, T2>::get_size() {
+int Map<T, T2>::get_size() {
 	return size;
 }
 
 template <typename T, typename T2 >
-void RBTree<T, T2>::clear()                   //clear of RED-BLACK-TREE
+void Map<T, T2>::clear()                   //clear of RED-BLACK-TREE
 {
 	while (size > 0)
 	remove(root->key);
@@ -239,13 +235,13 @@ void RBTree<T, T2>::clear()                   //clear of RED-BLACK-TREE
 }
 
 template <typename T, typename T2 >
-void RBTree<T, T2>::reset_list()
+void Map<T, T2>::reset_list()
 {
 	root = nullptr;
 }
 
 template <typename T, typename T2 >
-typename RBTree<T, T2>::node * RBTree<T, T2>::get_leaf(node *current)      
+typename Map<T, T2>::node * Map<T, T2>::get_leaf(node *current)      //получение крайнего листового элемента
 {
 	node *leaf = NULL;
 	if (current->left != NULL)
@@ -264,20 +260,20 @@ typename RBTree<T, T2>::node * RBTree<T, T2>::get_leaf(node *current)
 }
 
 template <typename T, typename T2 >
-void RBTree<T, T2>::insert(T key, T2 value) {
+void Map<T, T2>::insert(T key, T2 value) {
 
 	node *help_elem, *prev;
 	node *current = new node(key, value);
 	help_elem = root;
 	prev = nullptr;
-	if (root == nullptr)
+	if (root == nullptr)                         //если список пустой
 	{
 		add_first(current);
 	
 	}
 	else
 	{
-		while (help_elem != nullptr)
+		while (help_elem != nullptr)               //цикл для нахождения места для вставки нового элемента
 		{
 			prev = help_elem;
 			if (help_elem->key < current->key)
@@ -297,7 +293,7 @@ void RBTree<T, T2>::insert(T key, T2 value) {
 }
 
 template <typename T, typename T2 >
-void RBTree<T, T2>::insertfix(node *current) {
+void Map<T, T2>::insertfix(node *current) {  // расстановка цветов по правилам
 	
 	node *uncle;
 	if (root == current)
@@ -365,7 +361,7 @@ void RBTree<T, T2>::insertfix(node *current) {
 }
 
 template <typename T, typename T2 >
-void RBTree<T, T2>::leftrotate(node *current)
+void Map<T, T2>::leftrotate(node *current)
 {
 	if (current->right == nullptr)
 		return;
@@ -396,7 +392,7 @@ void RBTree<T, T2>::leftrotate(node *current)
 }
 
 template <typename T, typename T2 >
-void RBTree<T, T2>::rightrotate(node *current)
+void Map<T, T2>::rightrotate(node *current)
 {
 	if (current->left == nullptr)
 		return;
@@ -425,42 +421,3 @@ void RBTree<T, T2>::rightrotate(node *current)
 		current->parent = child;
 	}
 }
-
-/*template <typename T>
-typename RBTree<T>::node* RBTree<T>::get_uncle(node *cur) {
-	node *granny = get_grandparent(cur);
-	if (granny == nullptr)
-		return nullptr; // No grandparent means no uncle
-	if (cur->parent == granny->next_left)
-		return granny->next_right;
-	else
-		return granny->next_left;
-}
-template <typename T>
-typename RBTree<T>::node* RBTree<T>::get_grandparent(node *cur) {
-	if ((cur != nullptr) && (cur->parent != nullptr))
-		return cur->parent->parent;
-	else
-		return nullptr;
-}
-template<typename T>
-typename RBTree<T>::node * RBTree<T>::get_sibling(node *current)
-{
-	if (current == current->parent->next_left)
-		return current->parent->next_right;
-	else
-		return current->parent->next_left;
-}
-*/
-
-/*
-template<typename T>
-void RBTree<T>::node::Del()
-{
-	if (this != nullptr) {
-		this->next_left->Del();
-		this->next_right->Del();
-		free(this);
-	}
-}
-*/

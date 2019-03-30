@@ -7,13 +7,13 @@ using namespace std;
 
 template <class item> class queue
 {
-	item *Queue; int head, tail, size_, Max;
+	item* Queue; int head, tail, size_, Max;
 public:
 	queue(int maxQ) : head(0), tail(0), Max(maxQ), size_(0), Queue(new item[maxQ + 1]) {}
 	~queue();
 	bool empty() const { return (head % Max) == tail; }
 	int size() const { return size_; }
-	void push(item & item) { Queue[tail++] = item; tail %= Max; ++size_; }
+	void push(item& item) { Queue[tail++] = item; tail %= Max; ++size_; }
 	item front() const { return Queue[head % Max]; }
 	void pop() { head++; head %= Max; --size_; }
 };
@@ -25,9 +25,9 @@ queue<item>::~queue()
 }
 
 template <typename T, typename T2 >
-class RBTree
+class Map
 {
-private:
+	private:
 
 	class node
 	{
@@ -47,15 +47,14 @@ private:
 		node * right;
 		node *left;
 		node *parent;
-		
-
 	};
 
 	node * root;
 	size_t size;
-public:
-	RBTree();
-	~RBTree();
+	
+  public:
+		Map();
+		~Map();
 	
 	class TreeIterator : public Iterator<T, T2> {
 	protected:
@@ -79,6 +78,7 @@ public:
 		BftIterator(node *root, size_t size) : TreeIterator(root), nodes(size) {}
 		void operator++(T) override;
 	};
+private:
 	void insertfix(node *t);      //supporting function for insert
 	void leftrotate(node *);
 	void rightrotate(node *);
@@ -86,14 +86,15 @@ public:
 	node *get_leaf(node *);       //supporting function for remove
 	void add_first(node*);        //adding the first element to the tree
 	void delfix(node*);           //supporting function for remove, balance
-public:
+    
+  public:
 	void get_keys();
 	void get_value();
 	void clear();                 //clearing the tree
-	void insert(T, T2);
+	void insert(T, T2);           //insert element in the tree
 	void remove(T);               //removing element by key
-	int get_size();
-	void find(T);                 //finding element by key
+	int get_size();               //getting size of the tree
+	int find(T);                 //finding element by key
 	BftIterator create_bft_iterator() { return BftIterator(root, size); }
 	
 	
@@ -101,7 +102,7 @@ public:
 
 
 template<typename T, typename T2>
-void RBTree<T, T2>::BftIterator::operator++(T)
+void Map<T, T2>::BftIterator::operator++(T)
 {
 	if (this->current->left != nullptr)
 		nodes.push(this->current->left);
