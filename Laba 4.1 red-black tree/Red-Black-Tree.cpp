@@ -183,6 +183,16 @@ int Map<T, T2>::find(T key)
 	else return 0;
 }
 
+template <class T, class T2>
+bool Map<T, T2>::Find(T key, T2*& value)
+{
+	Node<T1, T2>* temp = node_find(root, key);
+	if (temp == nullptr)
+		return false;
+	value = &temp->value;
+	return true;
+}
+
 template <typename T, typename T2 >
 void Map<T, T2>::get_keys()
 {
