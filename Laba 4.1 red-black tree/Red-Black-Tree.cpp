@@ -17,7 +17,7 @@ Map<T, T2>::~Map()
 }
 
 template <typename T, typename T2 >
-void Map<T, T2> :: add_first(node *current)                    //добавление элемента в пустой список
+void Map<T, T2> :: add_first(node *current)                    //РґРѕР±Р°РІР»РµРЅРёРµ СЌР»РµРјРµРЅС‚Р° РІ РїСѓСЃС‚РѕР№ СЃРїРёСЃРѕРє
 {
 	root = current;
 	root->parent = nullptr;
@@ -26,7 +26,7 @@ void Map<T, T2> :: add_first(node *current)                    //добавление элем
 template <typename T, typename T2 >
 void Map<T, T2>::remove(T key)
 {
-	if (this->root == nullptr)                                //если список пуст
+	if (this->root == nullptr)                                //РµСЃР»Рё СЃРїРёСЃРѕРє РїСѓСЃС‚
 	{
 		throw out_of_range("SOS! Dangerous! Error");
 	}
@@ -35,8 +35,8 @@ void Map<T, T2>::remove(T key)
 	current = root;
 	node *parent_of_leaf = NULL;
 	node *leaf = NULL;
-	int flag = 0;                                             // переменная-флаг, принимает значение 1, если элемент для удаления найден
-	while (current != NULL && flag == 0)                      //цикл для нахождения нужного элемента
+	int flag = 0;                                             // РїРµСЂРµРјРµРЅРЅР°СЏ-С„Р»Р°Рі, РїСЂРёРЅРёРјР°РµС‚ Р·РЅР°С‡РµРЅРёРµ 1, РµСЃР»Рё СЌР»РµРјРµРЅС‚ РґР»СЏ СѓРґР°Р»РµРЅРёСЏ РЅР°Р№РґРµРЅ
+	while (current != NULL && flag == 0)                      //С†РёРєР» РґР»СЏ РЅР°С…РѕР¶РґРµРЅРёСЏ РЅСѓР¶РЅРѕРіРѕ СЌР»РµРјРµРЅС‚Р°
 	{
 		if (current->key == key)
 			flag = 1;
@@ -48,13 +48,13 @@ void Map<T, T2>::remove(T key)
 				current = current->left;
 		}
 	}
-	if (flag == 0)                                            //если элемент не найден
+	if (flag == 0)                                            //РµСЃР»Рё СЌР»РµРјРµРЅС‚ РЅРµ РЅР°Р№РґРµРЅ
 	{
 		throw out_of_range("Not found");
 	}
 	else
 	{
-		if (current->left == nullptr || current->right == nullptr)  //если у элемента нет правого или левого потомка
+		if (current->left == nullptr || current->right == nullptr)  //РµСЃР»Рё Сѓ СЌР»РµРјРµРЅС‚Р° РЅРµС‚ РїСЂР°РІРѕРіРѕ РёР»Рё Р»РµРІРѕРіРѕ РїРѕС‚РѕРјРєР°
 			parent_of_leaf = current;
 		else
 			parent_of_leaf = get_leaf(current);
@@ -74,16 +74,16 @@ void Map<T, T2>::remove(T key)
 		else
 		{
 			if (parent_of_leaf == parent_of_leaf->parent->left)
-				parent_of_leaf->parent->left = leaf;                     //зануляем указатели посленего элемента
+				parent_of_leaf->parent->left = leaf;                     //Р·Р°РЅСѓР»СЏРµРј СѓРєР°Р·Р°С‚РµР»Рё РїРѕСЃР»РµРЅРµРіРѕ СЌР»РµРјРµРЅС‚Р°
 			else
 				parent_of_leaf->parent->right = leaf;
 		}
-		if (parent_of_leaf != current)                                  //переносим значения последнего элемента 
+		if (parent_of_leaf != current)                                  //РїРµСЂРµРЅРѕСЃРёРј Р·РЅР°С‡РµРЅРёСЏ РїРѕСЃР»РµРґРЅРµРіРѕ СЌР»РµРјРµРЅС‚Р° 
 		{
 			current->color = parent_of_leaf->color;
 			current->key = parent_of_leaf->key;
 		}
-		if (parent_of_leaf->color == 'b')                              //перебалансировка цветов
+		if (parent_of_leaf->color == 'b')                              //РїРµСЂРµР±Р°Р»Р°РЅСЃРёСЂРѕРІРєР° С†РІРµС‚РѕРІ
 			delfix(leaf);
 	}
 	size--;
@@ -183,15 +183,7 @@ int Map<T, T2>::find(T key)
 	else return 0;
 }
 
-template <class T, class T2>
-bool Map<T, T2>::Find(T key, T2*& value)
-{
-	Node<T1, T2>* temp = node_find(root, key);
-	if (temp == nullptr)
-		return false;
-	value = &temp->value;
-	return true;
-}
+
 
 template <typename T, typename T2 >
 void Map<T, T2>::get_keys()
@@ -244,14 +236,9 @@ void Map<T, T2>::clear()                   //clear of RED-BLACK-TREE
 	if (size == 0) cout << "RBTree is empty\n";
 }
 
-template <typename T, typename T2 >
-void Map<T, T2>::reset_list()
-{
-	root = nullptr;
-}
 
 template <typename T, typename T2 >
-typename Map<T, T2>::node * Map<T, T2>::get_leaf(node *current)      //получение крайнего листового элемента
+typename Map<T, T2>::node * Map<T, T2>::get_leaf(node *current)      //РїРѕР»СѓС‡РµРЅРёРµ РєСЂР°Р№РЅРµРіРѕ Р»РёСЃС‚РѕРІРѕРіРѕ СЌР»РµРјРµРЅС‚Р°
 {
 	node *leaf = NULL;
 	if (current->left != NULL)
@@ -276,14 +263,14 @@ void Map<T, T2>::insert(T key, T2 value) {
 	node *current = new node(key, value);
 	help_elem = root;
 	prev = nullptr;
-	if (root == nullptr)                         //если список пустой
+	if (root == nullptr)                         //РµСЃР»Рё СЃРїРёСЃРѕРє РїСѓСЃС‚РѕР№
 	{
 		add_first(current);
 	
 	}
 	else
 	{
-		while (help_elem != nullptr)               //цикл для нахождения места для вставки нового элемента
+		while (help_elem != nullptr)               //С†РёРєР» РґР»СЏ РЅР°С…РѕР¶РґРµРЅРёСЏ РјРµСЃС‚Р° РґР»СЏ РІСЃС‚Р°РІРєРё РЅРѕРІРѕРіРѕ СЌР»РµРјРµРЅС‚Р°
 		{
 			prev = help_elem;
 			if (help_elem->key < current->key)
@@ -303,7 +290,7 @@ void Map<T, T2>::insert(T key, T2 value) {
 }
 
 template <typename T, typename T2 >
-void Map<T, T2>::insertfix(node *current) {  // расстановка цветов по правилам
+void Map<T, T2>::insertfix(node *current) {  // СЂР°СЃСЃС‚Р°РЅРѕРІРєР° С†РІРµС‚РѕРІ РїРѕ РїСЂР°РІРёР»Р°Рј
 	
 	node *uncle;
 	if (root == current)
