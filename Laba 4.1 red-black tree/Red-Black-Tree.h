@@ -1,8 +1,7 @@
-﻿#pragma once
+#pragma once
 #include <iostream>
 #include "Iterator.h"
-#include "../../Laba 4.1/Laba 4.1/LinkedList.h"
-#include "../../Laba 4.1/Laba 4.1/LinkedList.cpp"
+
 using namespace std;
 
 
@@ -98,9 +97,7 @@ private:
 	int find(T);                 //finding element by key
 	bool Find(T key, T2*& value);
 	BftIterator create_bft_iterator() { return BftIterator(root, size); }
-	LinkedList<Node<T, T2>*> Nodes();
-	LinkedList<T> Keys();
-	LinkedList<T2> Values();
+	
 	
 };
 
