@@ -2,419 +2,377 @@
 #include <stdexcept>
 
 
-template <typename T, typename T2 >
-Map<T, T2>::Map()
+template <typename T >
+map<T>::map()
 {
 	reset_list();
 	size = 0;
 }
 
-template <typename T, typename T2 >
-Map<T, T2>::~Map()
+template <typename T>
+map<T>::~map()
 {
 	clear();
-
 }
-
-template <typename T, typename T2 >
-void Map<T, T2> :: add_first(node *current)                    //добавление элемента в пустой список
+template <typename T >
+void map<T>::add_first(T key)
 {
-	root = current;
+
+	root = new node(key);
 	root->parent = nullptr;
+	size++;
 }
-
-template <typename T, typename T2 >
-void Map<T, T2>::remove(T key)
+template <typename T>
+void map<T>::remove(T key)
 {
-	if (this->root == nullptr)                                //если список пуст
+	if (this->root == nullptr)
 	{
-		throw out_of_range("SOS! Dangerous! Error");
+		throw out_of_range("error");
 	}
 
 	node *current;
 	current = root;
-	node *parent_of_leaf = NULL;
-	node *leaf = NULL;
-	int flag = 0;                                             // переменная-флаг, принимает значение 1, если элемент для удаления найден
-	while (current != NULL && flag == 0)                      //цикл для нахождения нужного элемента
+	node *successor = nullptr;
+	node *temp = nullptr;
+	int found = 0;
+	while (current != nullptr && found == 0)
 	{
 		if (current->key == key)
-			flag = 1;
-		if (flag == 0)
+			found = 1;
+		if (found == 0)
 		{
 			if (current->key < key)
-				current = current->right;
+				current = current->next_right;
 			else
-				current = current->left;
+				current = current->next_left;
 		}
 	}
-	if (flag == 0)                                            //если элемент не найден
+	if (found == 0)
 	{
-		throw out_of_range("Not found");
+		throw out_of_range("no this element");
 	}
 	else
 	{
-		if (current->left == nullptr || current->right == nullptr)  //если у элемента нет правого или левого потомка
-			parent_of_leaf = current;
+		if (current->next_left == nullptr || current->next_right == nullptr)
+			successor = current;
 		else
-			parent_of_leaf = get_leaf(current);
-		if (parent_of_leaf->left != nullptr)
-			leaf = parent_of_leaf->left;
+			successor = get_successor(current);
+		if (successor->next_left != nullptr)
+			temp = successor->next_left;
 		else
 		{
-			if (parent_of_leaf->right != nullptr)
-				leaf = parent_of_leaf->right;
+			if (successor->next_right != nullptr)
+				temp = successor->next_right;
 			else
-				leaf = nullptr;
+				temp = nullptr;
 		}
-		if (leaf != nullptr)
-			leaf->parent = parent_of_leaf->parent;
-		if (parent_of_leaf->parent == nullptr)
-			root = leaf;
+		if (temp != nullptr)
+			temp->parent = successor->parent;
+		if (successor->parent == nullptr)
+			root = temp;
 		else
 		{
-			if (parent_of_leaf == parent_of_leaf->parent->left)
-				parent_of_leaf->parent->left = leaf;                     //зануляем указатели посленего элемента
+			if (successor == successor->parent->next_left)
+				successor->parent->next_left = temp;
 			else
-				parent_of_leaf->parent->right = leaf;
+				successor->parent->next_right = temp;
 		}
-		if (parent_of_leaf != current)                                  //переносим значения последнего элемента 
+		if (successor != current)
 		{
-			current->color = parent_of_leaf->color;
-			current->key = parent_of_leaf->key;
+			current->color = successor->color;
+			current->key = successor->key;
+			current->frequancy = successor->frequancy;
 		}
-		if (parent_of_leaf->color == 'b')                              //перебалансировка цветов
-			delfix(leaf);
+		if (temp != nullptr)
+			if (successor->color == 0)
+				delfix(temp);
 	}
 	size--;
 }
-
-template <typename T, typename T2 >
-void Map<T, T2>::delfix(node *current)
+template <typename T >
+void map<T>::delfix(node *fixable)
 {
-	node *temp_elem;
-	while (current != root && current->color == 'b')
+	node *sibling;
+	while (fixable != root && fixable->color == 0)
 	{
-		if (current->parent->left == current)
+		if (fixable->parent->next_left == fixable)
 		{
-			temp_elem = current->parent->right;
-			if (temp_elem->color == 'r')
+			sibling = fixable->parent->next_right;
+			if (sibling->color == 1)
 			{
-				temp_elem->color = 'b';
-				current->parent->color = 'r';
-				leftrotate(current->parent);
-				temp_elem = current->parent->right;
+				sibling->color = 0;
+				fixable->parent->color = 1;
+				leftrotate(fixable->parent);
+				sibling = fixable->parent->next_right;
 			}
-			if (temp_elem->right->color == 'b' && temp_elem->left->color == 'b')
+			if (sibling->next_right->color == 0 && sibling->next_left->color == 0)
 			{
-				temp_elem->color = 'r';
-				current = current->parent;
+				sibling->color = 1;
+				fixable = fixable->parent;
 			}
 			else
 			{
-				if (temp_elem->right->color == 'b')
+				if (sibling->next_right->color == 0)
 				{
-					temp_elem->left->color = 'b';
-					temp_elem->color = 'r';
-					rightrotate(temp_elem);
-					temp_elem = current->parent->right;
+					sibling->next_left->color == 0;
+					sibling->color = 1;
+					rightrotate(sibling);
+					sibling = fixable->parent->next_right;
 				}
-				temp_elem->color = current->parent->color;
-				current->parent->color = 'b';
-				temp_elem->right->color = 'b';
-				leftrotate(current->parent);
-				current = root;
+				sibling->color = fixable->parent->color;
+				fixable->parent->color = 0;
+				sibling->next_right->color = 0;
+				leftrotate(fixable->parent);
+				fixable = root;
 			}
 		}
 		else
 		{
-			temp_elem = current->parent->left;
-			if (temp_elem->color == 'r')
+			sibling = fixable->parent->next_left;
+			if (sibling->color == 1)
 			{
-				temp_elem->color = 'b';
-				current->parent->color = 'r';
-				rightrotate(current->parent);
-				temp_elem = current->parent->left;
+				sibling->color = 0;
+				fixable->parent->color = 1;
+				rightrotate(fixable->parent);
+				sibling = fixable->parent->next_left;
 			}
-			if (temp_elem->left->color == 'b'&&temp_elem->right->color == 'b')
+			if (sibling->next_left->color == 0 && sibling->next_right->color == 0)
 			{
-				temp_elem->color = 'r';
-				current = current->parent;
+				sibling->color = 1;
+				fixable = fixable->parent;
 			}
 			else
 			{
-				if (temp_elem->left->color == 'b')
+				if (sibling->next_left->color == 0)
 				{
-					temp_elem->right->color = 'b';
-					temp_elem->color = 'r';
-					leftrotate(temp_elem);
-					temp_elem = current->parent->left;
+					sibling->next_right->color = 0;
+					sibling->color = 1;
+					leftrotate(sibling);
+					sibling = fixable->parent->next_left;
 				}
-				temp_elem->color = current->parent->color;
-				current->parent->color = 'b';
-				temp_elem->left->color = 'b';
-				rightrotate(current->parent);
-				current = root;
+				sibling->color = fixable->parent->color;
+				fixable->parent->color = 0;
+				sibling->next_left->color = 0;
+				rightrotate(fixable->parent);
+				fixable = root;
 			}
 		}
-		current->color = 'b';
-		root->color = 'b';
+		fixable->color = 0;
+		root->color = 0;
 	}
 }
-
-template <typename T, typename T2 >
-int Map<T, T2>::find(T key)
+template<typename T>
+typename map<T>::node * map<T>::find(T key)
 {
 	if (this->root == nullptr)
 	{
-		throw out_of_range("Tree is empty");
+		throw out_of_range("error");
 	}
-	int flag = 0;
+
 	auto it = create_bft_iterator();
 	for (; it != nullptr; it++)
-	{
-		if (it.current_key() == key)
-		{
-			cout << it.current_key();
-			flag = 1;
-		}
-	}
-	if (flag == 1) return 1;
-	else return 0;
+		if (it.current_key() == key) return it.get_cur();
+	throw out_of_range("error");
 }
 
-
-
-template <typename T, typename T2 >
-void Map<T, T2>::get_keys()
+template<typename T>
+List<T> map<T>::get_keys()
 {
-
+	List <T> list;
 	if (this->root == nullptr)
 	{
-		throw out_of_range("SOS! ATTENTION! ERROR!");
+		throw out_of_range("error");
 	}
-	
 	auto it = create_bft_iterator();
 	for (; it != nullptr; it++)
-	{
-		cout << it.current_key() << ' ';
-	}
-	cout << '\n';
-	auto it1 = create_bft_iterator();
-	for (; it1 != nullptr; it1++)
-	{
-		cout << it1.current_color() << ' ';
-	}
-
-	cout << '\n';
+		list.push_back(it.current_key(), *it);
+	return list;
 }
 
-template <typename T, typename T2 >
-void Map<T, T2>::get_value()
+template <typename T >
+void map<T>::get_value()
 {
 	if (this->root == nullptr)
 	{
-		throw out_of_range("SOS! ATTENTION! ERROR!");
+		throw out_of_range("error");
 	}
-	auto it1 = create_bft_iterator();
-	for (; it1 != nullptr; it1++)
-		cout <<it1.current_value() << ' ';
+	auto it = create_bft_iterator();
+	for (; it != nullptr; it++)
+		cout << *it << '-' << it.current_key() << ' ' << it.current_color() << ' ';
 	cout << '\n';
+
+
 }
 
-template <typename T, typename T2 >
-int Map<T, T2>::get_size() {
-	return size;
-}
-
-template <typename T, typename T2 >
-void Map<T, T2>::clear()                   //clear of RED-BLACK-TREE
+template <typename T>
+void map<T>::clear()
 {
 	while (size > 0)
-	remove(root->key);
-
-	if (size == 0) cout << "RBTree is empty\n";
+		remove(root->key);
 }
 
-
-template <typename T, typename T2 >
-typename Map<T, T2>::node * Map<T, T2>::get_leaf(node *current)      //получение крайнего листового элемента
+template <typename T>
+void map<T>::reset_list()
 {
-	node *leaf = NULL;
-	if (current->left != NULL)
-	{
-		leaf = current->left;
-		while (leaf->right != NULL)
-			leaf = leaf->right;
-	}
-	else
-	{
-		leaf = current->right;
-		while (leaf->left != NULL)
-			leaf = leaf->left;
-	}
-	return leaf;
+	//	cur = nullptr;
+	root = nullptr;
 }
 
-template <typename T, typename T2 >
-void Map<T, T2>::insert(T key, T2 value) {
-
-	node *help_elem, *prev;
-	node *current = new node(key, value);
-	help_elem = root;
-	prev = nullptr;
-	if (root == nullptr)                         //если список пустой
+template <typename T>
+typename map<T>::node * map<T>::get_successor(node *current) //получение наследника
+{
+	node *successor = nullptr;
+	if (current->next_left != nullptr)
 	{
-		add_first(current);
-	
+		successor = current->next_left;
+		while (successor->next_right != nullptr)
+			successor = successor->next_right;
 	}
 	else
 	{
-		while (help_elem != nullptr)               //цикл для нахождения места для вставки нового элемента
+		successor = current->next_right;
+		while (successor->next_left != nullptr)
+			successor = successor->next_left;
+	}
+	return successor;
+}
+
+template <typename T>
+void map<T>::insert(T key)
+{
+
+	node* temp, *prev;
+	node* current = new node(key);
+	temp = root;
+	prev = nullptr;
+	if (root == nullptr)
+	{
+		root = current;
+		current->parent = nullptr;
+		current->frequancy++;
+	}
+	else
+	{
+		while (temp != nullptr)
 		{
-			prev = help_elem;
-			if (help_elem->key < current->key)
-				help_elem = help_elem->right;
+			if (temp->key == current->key) break;
+			prev = temp;
+			if (temp->key < current->key)
+				temp = temp->next_right;
 			else
-				help_elem = help_elem->left;
-		}	
-		current->parent = prev;
-		if (prev->key < current->key)
-			prev->right = current;
+				temp = temp->next_left;
+		}
+
+		if ((temp != nullptr) && (temp->key == current->key)) {
+			temp->frequancy++;
+			return;
+		}
 		else
-			prev->left = current;
+		{
+			current->parent = prev;
+			if (prev->key < current->key)
+				prev->next_right = current;
+			else
+				prev->next_left = current;
+			current->frequancy++;
+		}
 	}
 
 	insertfix(current);
 	size++;
 }
 
-template <typename T, typename T2 >
-void Map<T, T2>::insertfix(node *current) {  // расстановка цветов по правилам
+template <typename T >
+void map<T>::insertfix(node *&current) {
 	
-	node *uncle;
-	if (root == current)
-	{
-		current->color = 'b';
-		return;
-	}
-	
-	while (current->parent != nullptr && current->parent->color == 'r')
-	{
-		node *grandparents = current->parent->parent;
-		if (grandparents->left == current->parent)
-		{
-			if (grandparents->right != nullptr)
-			{
-				uncle = grandparents->right;
-				if (uncle->color == 'r')
-				{
-					current->parent->color = 'b';
-					uncle->color = 'b';
-					grandparents->color = 'r';
-					current = grandparents;
-				}
+	node* parent = nullptr;
+	node* grandparent = nullptr;
+	while (current != root && current->color == 1 && current->parent->color == 1) {
+		parent = current->parent;
+		grandparent = parent->parent;
+		if (parent == grandparent->next_left) {
+			node* uncle = grandparent->next_right;
+			if (uncle != nullptr && uncle->color == 1) {
+				uncle->color = 0;
+				parent->color = 0;
+				grandparent->color = 1;
+				current = grandparent;
 			}
-			else
-			{
-				if (current->parent->right == current)
-				{
-					current = current->parent;
-					leftrotate(current);
+			else {
+				if (current == parent->next_right) {
+					leftrotate(parent);
+					current = parent;
+					parent = current->parent;
 				}
-				current->parent->color = 'b';
-				grandparents->color = 'r';
-				rightrotate(grandparents);
+				rightrotate(grandparent);
+				swap(parent->color, grandparent->color);
+				current = parent;
 			}
 		}
-		else
-		{
-			if (grandparents->left != nullptr)
-			{
-				uncle = grandparents->left;
-				if (uncle->color == 'r')
-				{
-					current->parent->color = 'b';
-					uncle->color = 'b';
-					grandparents->color = 'r';
-					current = grandparents;
-				}
+		else {
+			node* uncle = grandparent->next_left;
+			if (uncle != nullptr && uncle->color == 1) {
+				uncle->color = 0;
+				parent->color = 0;
+				grandparent->color = 1;
+				current = grandparent;
 			}
-			else
-			{
-				if (current->parent->left == current)
-				{
-					current = current->parent;
-					rightrotate(current);
+			else {
+				if (current == parent->next_left) {
+					rightrotate(parent);
+					current = parent;
+					parent = current->parent;
 				}
-				current->parent->color = 'b';
-				grandparents->color = 'r';
-				leftrotate(grandparents);
+				leftrotate(grandparent);
+				swap(parent->color, grandparent->color);
+				current = parent;
 			}
 		}
-		root->color = 'b';
 	}
-
+	root->color = 0;
 }
 
-template <typename T, typename T2 >
-void Map<T, T2>::leftrotate(node *current)
+template <typename T >
+void map<T>::leftrotate(node *current)
 {
-	if (current->right == nullptr)
-		return;
+	node* right_child = current->next_right;
+	current->next_right = right_child->next_left;
+
+	if (current->next_right != nullptr)
+		current->next_right->parent = current;
+
+	right_child->parent = current->parent;
+
+	if (current->parent == nullptr)
+		root = right_child;
+	else if (current == current->parent->next_left)
+		current->parent->next_left = right_child;
 	else
-	{
-		node *y = current->right;
-		if (y->left != nullptr)
-		{
-			current->right = y->left;
-			y->left->parent = current;
-		}
-		else
-			current->right = nullptr;
-		if (current->parent != nullptr)
-			y->parent = current->parent;
-		if (current->parent == nullptr)
-			root = y;
-		else
-		{
-			if (current == current->parent->left)
-				current->parent->left = y;
-			else
-				current->parent->right = y;
-		}
-		y->left = current;
-		current->parent = y;
-	}
+		current->parent->next_right = right_child;
+
+	right_child->next_left = current;
+	current->parent = right_child;
 }
 
-template <typename T, typename T2 >
-void Map<T, T2>::rightrotate(node *current)
+template <typename T >
+void map<T>::rightrotate(node * current)
 {
-	if (current->left == nullptr)
-		return;
+	node* left_child = current->next_left;
+	current->next_left = left_child->next_right;
+
+	if (current->next_left != nullptr)
+		current->next_left->parent = current;
+
+	left_child->parent = current->parent;
+
+	if (current->parent == nullptr)
+		root = left_child;
+	else if (current == current->parent->next_left)
+		current->parent->next_left = left_child;
 	else
-	{
-		node *child = current->left;
-		if (child->right != nullptr)
-		{
-			current->left = child->right;
-			child->right->parent = current;
-		}
-		else
-			current->left = nullptr;
-		if (current->parent != nullptr)
-			child->parent = current->parent;
-		if (current->parent == nullptr)
-			root = child;
-		else
-		{
-			if (current == current->parent->left)
-				current->parent->left = child;
-			else
-				current->parent->right = child;
-		}
-		child->right = current;
-		current->parent = child;
-	}
+		current->parent->next_right = left_child;
+
+	left_child->next_right = current;
+	current->parent = left_child;
 }
+
